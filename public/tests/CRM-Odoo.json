@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "subject": "CRM en Odoo",
+    "question": "¿Cuál es el propósito principal del CRM en Odoo?",
+    "options": ["Gestionar inventario", "Rastrear interacciones con clientes", "Procesar nómina", "Gestionar la cadena de suministro"],
+    "answer": "Rastrear interacciones con clientes"
+  },
+  {
+    "id": 2,
+    "subject": "CRM en Odoo",
+    "question": "En el CRM de Odoo, ¿qué es un 'Lead'?",
+    "options": [
+      "Una venta completada",
+      "Una oportunidad potencial de venta",
+      "Un registro de empleado",
+      "Un tipo de producto"
+    ],
+    "answer": "Una oportunidad potencial de venta"
+  },
+  {
+    "id": 3,
+    "subject": "CRM en Odoo",
+    "question": "¿Cuál de las siguientes es una característica clave del CRM en Odoo?",
+    "options": ["Seguimiento de inventario", "Gestión de tickets de clientes", "Gestión de embudo de ventas", "Auditoría financiera"],
+    "answer": "Gestión de embudo de ventas"
+  },
+  {
+    "id": 4,
+    "subject": "CRM en Odoo",
+    "question": "¿Cuál es el propósito de las 'Etapas' en el CRM de Odoo?",
+    "options": [
+      "Categorizar diferentes tipos de productos",
+      "Rastrear el progreso de una oportunidad de venta",
+      "Listar diferentes empleados",
+      "Monitorear niveles de inventario en almacenes"
+    ],
+    "answer": "Rastrear el progreso de una oportunidad de venta"
+  },
+  {
+    "id": 5,
+    "subject": "CRM en Odoo",
+    "question": "¿Cómo ayuda el CRM de Odoo en la previsión de ventas?",
+    "options": [
+      "Monitoreando las tendencias de inventario",
+      "A través de sus herramientas de análisis de embudo",
+      "Calculando los costos de nómina",
+      "Generando facturas automáticamente"
+    ],
+    "answer": "A través de sus herramientas de análisis de embudo"
+  }
+]
