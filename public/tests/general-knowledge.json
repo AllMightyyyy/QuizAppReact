@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "subject": "Mathematics",
+    "question": "What is the value of π (pi) up to two decimal places?",
+    "options": ["3.12", "3.14", "3.16", "3.18"],
+    "answer": "3.14"
+  },
+  {
+    "id": 2,
+    "subject": "Science",
+    "question": "What is the chemical symbol for Gold?",
+    "options": ["Au", "Ag", "Gd", "Go"],
+    "answer": "Au"
+  },
+  {
+    "id": 3,
+    "subject": "History",
+    "question": "Who was the first President of the United States?",
+    "options": ["Abraham Lincoln", "Thomas Jefferson", "George Washington", "John Adams"],
+    "answer": "George Washington"
+  },
+  {
+    "id": 4,
+    "subject": "Geography",
+    "question": "What is the capital city of Australia?",
+    "options": ["Sydney", "Melbourne", "Canberra", "Brisbane"],
+    "answer": "Canberra"
+  },
+  {
+    "id": 5,
+    "subject": "Literature",
+    "question": "Who wrote 'Romeo and Juliet'?",
+    "options": ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
+    "answer": "William Shakespeare"
+  }
+]
