@@ -1,39 +1,55 @@
-import React, { useState, useEffect } from 'react';
+// src/App.tsx
+
+import React, { useEffect, useState } from 'react';
 import { Container, CircularProgress, Typography, Box, Grid } from '@mui/material';
 import Quiz from './components/Quiz';
 import Result from './components/Result';
 import Navbar from './components/Navbar/Navbar';
 import QuestionListView from './components/QuestionListView/QuestionListView';
 import { Question, UserAnswer } from './types';
+import { useQuery } from '@tanstack/react-query';
+import { fetchQuizQuestions } from './services/quizService';
+import ParticleBackground from "./components/Background/ParticleBackground";
 
 const App: React.FC = () => {
-    const [questions, setQuestions] = useState<Question[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
     const [showResult, setShowResult] = useState<boolean>(false);
     const [quizPath, setQuizPath] = useState<string | null>(null);
+    const [threeDText, setThreeDText] = useState<string>(''); // State for 3D Text
+
+    const {
+        data: questions,
+        isLoading,
+        isError,
+        error,
+        refetch,
+    } = useQuery<Question[], Error>({
+        queryKey: ['quizQuestions', quizPath],
+        queryFn: () => fetchQuizQuestions(quizPath as string),
+        enabled: !!quizPath, // Only fetch when quizPath is set
+    });
 
     useEffect(() => {
-        if (quizPath) {
-            setLoading(true);
-            fetch(quizPath)
-                .then((res) => res.json())
-                .then((data: Question[]) => {
-                    setQuestions(data);
-                    setLoading(false);
-                    setShowResult(false);
-                    setUserAnswers([]);
-                    setCurrentQuestionIndex(0);
-                })
-                .catch((err) => {
-                    console.error('Error loading questions:', err);
-                    setLoading(false);
-                });
+        if (questions) {
+            setShowResult(false);
+            setUserAnswers([]);
+            setCurrentQuestionIndex(0);
         }
-    }, [quizPath]);
+    }, [questions]);
 
-    const handleAnswer = (selectedOption: string | string[], isCorrect: boolean, timeTaken: number) => {
+    useEffect(() => {
+        if (isError && error) {
+            console.error('Error fetching quiz questions:', error.message);
+        }
+    }, [isError, error]);
+
+    const handleAnswer = (
+        selectedOption: string | string[],
+        isCorrect: boolean,
+        timeTaken: number
+    ) => {
+        if (!questions) return;
         const currentQuestion = questions[currentQuestionIndex];
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
@@ -43,7 +59,9 @@ const App: React.FC = () => {
         };
 
         setUserAnswers((prevAnswers) => {
-            const existingAnswerIndex = prevAnswers.findIndex((a) => a.questionId === currentQuestion.id);
+            const existingAnswerIndex = prevAnswers.findIndex(
+                (a) => a.questionId === currentQuestion.id
+            );
             if (existingAnswerIndex !== -1) {
                 const updatedAnswers = [...prevAnswers];
                 updatedAnswers[existingAnswerIndex] = answer;
@@ -61,6 +79,7 @@ const App: React.FC = () => {
     };
 
     const handleSelectQuestion = (id: number) => {
+        if (!questions) return;
         const index = questions.findIndex((q) => q.id === id);
         if (index !== -1) {
             setCurrentQuestionIndex(index);
@@ -71,35 +90,54 @@ const App: React.FC = () => {
         setUserAnswers([]);
         setCurrentQuestionIndex(0);
         setShowResult(false);
+        refetch();
+    };
+
+    const handleSetThreeDText = (text: string) => {
+        setThreeDText(text); // Update 3D Text state
     };
 
     return (
         <Box>
             {/* Navbar */}
-            <Navbar onSelectQuiz={(quizPath) => setQuizPath(quizPath)} />
+            <Navbar onSelectQuiz={(path) => setQuizPath(path)} onSetThreeDText={handleSetThreeDText} />
+
+            {/* 3D Particle Background with 3D Text */}
+            <ParticleBackground threeDText={threeDText} />
 
             {/* Main Content */}
-            <Container maxWidth="lg" sx={{ mt: 5 }}>
-                {loading && quizPath ? (
-                    // Only show loading if we're fetching quiz data
+            <Container maxWidth="lg" sx={{ mt: 5, position: 'relative', zIndex: 1 }}>
+                {isLoading && quizPath ? (
                     <Box sx={{ textAlign: 'center', mt: 10 }}>
                         <CircularProgress />
                         <Typography variant="h6" sx={{ mt: 2 }}>
                             Loading Quiz...
                         </Typography>
                     </Box>
-                ) : quizPath && questions.length > 0 ? (
-                    // Show the quiz content
+                ) : isError ? (
+                    <Box sx={{ textAlign: 'center', mt: 10 }}>
+                        <Typography variant="h6" color="error">
+                            Failed to load quiz. Please try again later.
+                        </Typography>
+                    </Box>
+                ) : quizPath && questions && questions.length > 0 ? (
                     <Grid container spacing={4}>
                         <Grid item xs={12} md={4}>
                             <QuestionListView
                                 questions={questions.map((q) => ({
                                     id: q.id,
                                     text: q.question,
-                                    answered: userAnswers.some((a) => a.questionId === q.id),
-                                    correct: userAnswers.find((a) => a.questionId === q.id)?.isCorrect ?? null,
+                                    answered: userAnswers.some(
+                                        (a) => a.questionId === q.id
+                                    ),
+                                    correct:
+                                        userAnswers.find(
+                                            (a) => a.questionId === q.id
+                                        )?.isCorrect ?? null,
                                 }))}
-                                currentQuestionId={questions[currentQuestionIndex].id}
+                                currentQuestionId={
+                                    questions[currentQuestionIndex].id
+                                }
                                 onSelect={handleSelectQuestion}
                             />
                         </Grid>
@@ -121,7 +159,6 @@ const App: React.FC = () => {
                         </Grid>
                     </Grid>
                 ) : (
-                    // Prompt to select a quiz if no quizPath is defined
                     <Box sx={{ textAlign: 'center', mt: 10 }}>
                         <Typography variant="h6" sx={{ mt: 2 }}>
                             Please select a quiz to start.
@@ -131,6 +168,7 @@ const App: React.FC = () => {
             </Container>
         </Box>
     );
+
 };
 
 export default App;

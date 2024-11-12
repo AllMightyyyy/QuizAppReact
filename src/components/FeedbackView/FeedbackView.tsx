@@ -1,11 +1,10 @@
-// src/components/FeedbackView/FeedbackView.tsx
-
 import React from 'react';
-import { Card, CardContent, Typography, Button, Box, List, ListItem, ListItemText, ListItemIcon, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { styled } from '@mui/system';
+import { motion } from 'framer-motion';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
@@ -80,15 +79,21 @@ const FeedbackView: React.FC<FeedbackViewProps> = ({ feedback, onRetry, question
 
                 {/* Retry Button */}
                 <Box sx={{ textAlign: 'center' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={onRetry}
-                        startIcon={<ReplayIcon />}
-                        sx={{ px: 4 }}
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                     >
-                        Retry Quiz
-                    </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={onRetry}
+                            startIcon={<ReplayIcon />}
+                            sx={{ px: 4 }}
+                            aria-label="Retry Quiz"
+                        >
+                            Retry Quiz
+                        </Button>
+                    </motion.div>
                 </Box>
             </CardContent>
         </StyledCard>

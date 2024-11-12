@@ -1,11 +1,14 @@
+// src/components/Navbar/Navbar.tsx
+
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Box, Menu, MenuItem, Button } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Box, Menu, MenuItem, Button, TextField } from '@mui/material';
 import QuizIcon from '@mui/icons-material/Quiz';
 import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/system';
 
 interface NavbarProps {
     onSelectQuiz: (quizPath: string) => void;
+    onSetThreeDText: (text: string) => void; // New prop for setting 3D Text
 }
 
 // Styled AppBar
@@ -35,9 +38,10 @@ const QUIZZES = [
     { name: 'CRM En Odoo', path: '/tests/CRM-Odoo.json' },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
+const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz, onSetThreeDText }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
+    const [inputText, setInputText] = useState<string>(''); // State for input field
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -53,20 +57,30 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
         onSelectQuiz(quizPath); // Notify the parent of the selected quiz path
     };
 
+    const handleSubmit = () => {
+        if (inputText.trim() !== '') {
+            onSetThreeDText(inputText.trim()); // Set the 3D Text
+            setInputText(''); // Clear input field
+        }
+    };
+
     return (
         <StyledAppBar position="static">
-            <Toolbar sx={{ minHeight: '114px', px: 4 }}>
-                {/* Logo with Quiz Icon */}
-                <LogoContainer>
-                    <QuizIcon sx={{ color: '#801BEC', fontSize: '2rem' }} />
-                </LogoContainer>
+            <Toolbar sx={{ minHeight: '114px', px: 4, display: 'flex', justifyContent: 'space-between' }}>
+                {/* Left side: Logo and Title */}
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {/* Logo with Quiz Icon */}
+                    <LogoContainer>
+                        <QuizIcon sx={{ color: '#801BEC', fontSize: '2rem' }} />
+                    </LogoContainer>
 
-                {/* Title */}
-                <Typography variant="h6" color="primary" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-                    Quiz App
-                </Typography>
+                    {/* Title */}
+                    <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+                        Quiz App
+                    </Typography>
+                </Box>
 
-                {/* Dropdown for selecting quizzes */}
+                {/* Middle: Dropdown for selecting quizzes */}
                 <Box>
                     <Button
                         variant="outlined"
@@ -78,6 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                             color: '#801BEC',
                             '&:hover': { borderColor: '#801BEC' },
                         }}
+                        aria-label="Select Quiz"
                     >
                         {selectedQuiz ? `Quiz: ${selectedQuiz}` : 'Select Quiz'}
                     </Button>
@@ -90,10 +105,36 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                     </Menu>
                 </Box>
 
-                {/* Additional Menu Icon */}
-                <IconButton edge="end" color="inherit" aria-label="menu" sx={{ ml: 2 }}>
-                    <MenuIcon />
-                </IconButton>
+                {/* Right side: Text input and submit button */}
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Enter 3D Text"
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSubmit();
+                            }
+                        }}
+                        sx={{ mr: 1, backgroundColor: 'white', borderRadius: '4px' }}
+                        inputProps={{ 'aria-label': '3D Text Input' }}
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit}
+                        aria-label="Submit 3D Text"
+                    >
+                        Submit
+                    </Button>
+
+                    {/* Additional Menu Icon */}
+                    <IconButton edge="end" color="inherit" aria-label="menu" sx={{ ml: 2 }}>
+                        <MenuIcon />
+                    </IconButton>
+                </Box>
             </Toolbar>
         </StyledAppBar>
     );

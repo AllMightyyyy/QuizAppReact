@@ -1,3 +1,5 @@
+// src/components/Quiz.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, LinearProgress, Box, Stack, Button } from '@mui/material';
 import OptionView from './OptionView/OptionView';
@@ -91,14 +93,15 @@ const Quiz: React.FC<QuizProps> = ({
                         </Typography>
                         <OptionView
                             options={question.options}
-                            correctAnswer={question.answer} // Pass correct answer (string or string[])
+                            correctAnswer={question.answer}
                             selectedOption={selectedOption}
                             onSelect={setSelectedOption}
-                            onSubmit={(isCorrect, timeTaken) => {
+                            handleAnswer={(selectedOption, isCorrect, timeTaken) => { // Ensure correct types
                                 setIsCorrect(isCorrect);
                                 setIsSubmitted(true);
                                 handleAnswer(selectedOption, isCorrect, timeTaken);
                             }}
+                            timeTaken={timeTaken} // Pass the timeTaken prop
                         />
                     </CardContent>
                 </Card>

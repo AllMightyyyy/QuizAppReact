@@ -84,61 +84,6 @@ const Result: React.FC<ResultProps> = ({ questions, userAnswers, onRetry }) => {
                     <Box mt={4}>
                         <FeedbackView feedback={feedback} onRetry={onRetry} questions={detailedFeedback} />
                     </Box>
-
-                    {/* Detailed Feedback for Each Question */}
-                    <Box mt={4}>
-                        <Typography variant="h5" gutterBottom>
-                            Detailed Feedback
-                        </Typography>
-                        <List>
-                            {detailedFeedback.map((question) => (
-                                <ListItem key={question.id} sx={{ mb: 2, alignItems: 'flex-start' }}>
-                                    <ListItemIcon>
-                                        {question.correct ? (
-                                            <CheckCircleIcon color="success" />
-                                        ) : (
-                                            <CancelIcon color="error" />
-                                        )}
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                Q{question.id}: {question.text}
-                                            </Typography>
-                                        }
-                                        secondary={
-                                            <>
-                                                <Typography
-                                                    variant="body2"
-                                                    color={question.correct ? 'green' : 'red'}
-                                                >
-                                                    Your Answer: {question.userAnswer}
-                                                </Typography>
-                                                {!question.correct && (
-                                                    <Typography variant="body2" color="textSecondary">
-                                                        Correct Answer: {question.correctAnswer}
-                                                    </Typography>
-                                                )}
-                                            </>
-                                        }
-                                        sx={{ ml: 2 }}
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Box>
-
-                    {/* Retry Button */}
-                    <Box mt={4} sx={{ textAlign: 'center' }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={onRetry}
-                            sx={{ px: 4 }}
-                        >
-                            Retry Quiz
-                        </Button>
-                    </Box>
                 </CardContent>
             </Card>
         </motion.div>

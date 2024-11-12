@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// src/components/OptionView/OptionView.tsx
+
+import React, { useState } from 'react';
 import { Card, CardContent, Typography, RadioGroup, FormControlLabel, Radio, Button, Box, Checkbox } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -24,36 +26,32 @@ const Heading = styled(Typography)(({ theme }) => ({
 
 interface OptionViewProps {
     options: string[];
-    correctAnswer: string | string[]; // Support multiple correct answers
+    correctAnswer: string | string[];
     selectedOption: string | string[];
     onSelect: (option: string | string[]) => void;
-    onSubmit: (isCorrect: boolean, timeTaken: number) => void;
+    handleAnswer: (selectedOption: string | string[], isCorrect: boolean, timeTaken: number) => void;
+    timeTaken: number; // New prop
 }
 
-const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selectedOption, onSelect, onSubmit }) => {
+const OptionView: React.FC<OptionViewProps> = ({
+                                                   options,
+                                                   correctAnswer,
+                                                   selectedOption,
+                                                   onSelect,
+                                                   handleAnswer,
+                                                   timeTaken,
+                                               }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-    const [timeTaken, setTimeTaken] = useState(0);
-    const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        // Start the timer when the component mounts
-        setTimer(setInterval(() => setTimeTaken((prevTime) => prevTime + 1), 1000));
-
-        return () => {
-            // Clear the timer on unmount
-            if (timer) clearInterval(timer);
-        };
-    }, []);
 
     const handleSelection = (option: string) => {
         if (Array.isArray(selectedOption)) {
             const updatedSelection = selectedOption.includes(option)
                 ? selectedOption.filter((item) => item !== option)
                 : [...selectedOption, option];
-            onSelect(updatedSelection);
+            onSelect(updatedSelection); // Update parent state
         } else {
-            onSelect(option);
+            onSelect(option); // Update parent state
         }
     };
 
@@ -64,12 +62,7 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
             : selectedOption === correctAnswer;
         setIsCorrect(correct);
         setIsSubmitted(true);
-
-        // Stop the timer
-        if (timer) clearInterval(timer);
-
-        // Trigger the onSubmit callback with the correctness and time taken
-        onSubmit(correct, timeTaken);
+        handleAnswer(selectedOption, correct, timeTaken); // Use timeTaken from props
     };
 
     return (
@@ -79,9 +72,9 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                 <RadioGroup
                     aria-label="quiz-options"
                     name="quiz-options"
-                    value={selectedOption}
-                    onChange={(e) => onSelect(e.target.value)}
-                    sx={{ opacity: isSubmitted ? 0.5 : 1 }} // Dim options after submission
+                    value={Array.isArray(selectedOption) ? '' : selectedOption}
+                    onChange={(e) => onSelect(e.target.value)} // Update parent state
+                    sx={{ opacity: isSubmitted ? 0.5 : 1 }}
                 >
                     {options.map((option, index) => (
                         <FormControlLabel
@@ -97,7 +90,7 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                                 ) : (
                                     <Radio
                                         checked={selectedOption === option}
-                                        onChange={() => onSelect(option)}
+                                        onChange={() => onSelect(option)} // Update parent state
                                         color="secondary"
                                     />
                                 )
@@ -106,7 +99,7 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <motion.span
                                         initial={{ scale: 1 }}
-                                        animate={{ scale: isSubmitted && selectedOption === option ? 1.1 : 1 }}
+                                        animate={{ scale: isSubmitted && (Array.isArray(selectedOption) ? selectedOption.includes(option) : selectedOption === option) ? 1.1 : 1 }}
                                         transition={{ duration: 0.3 }}
                                     >
                                         {option}
@@ -116,11 +109,10 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                                             {Array.isArray(correctAnswer)
                                                 ? correctAnswer.includes(option) && <CheckCircleIcon color="success" />
                                                 : option === correctAnswer && <CheckCircleIcon color="success" />}
-                                            {option === selectedOption &&
-                                                option !== correctAnswer &&
-                                                !correctAnswer.includes(option) && (
-                                                    <CancelIcon color="error" />
-                                                )}
+                                            {((Array.isArray(correctAnswer) && Array.isArray(selectedOption) && selectedOption.includes(option) && !correctAnswer.includes(option)) ||
+                                                (!Array.isArray(correctAnswer) && selectedOption === option && option !== correctAnswer)) && (
+                                                <CancelIcon color="error" />
+                                            )}
                                         </Box>
                                     )}
                                 </Box>
@@ -128,9 +120,9 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                             disabled={isSubmitted} // Disable after submission
                             sx={{
                                 color:
-                                    isSubmitted && (correctAnswer.includes(option) || option === correctAnswer)
+                                    isSubmitted && (Array.isArray(correctAnswer) ? correctAnswer.includes(option) : option === correctAnswer)
                                         ? 'green'
-                                        : isSubmitted && selectedOption === option && !correctAnswer.includes(option)
+                                        : isSubmitted && ((Array.isArray(selectedOption) && selectedOption.includes(option) && !Array.isArray(correctAnswer)) || (selectedOption === option && option !== correctAnswer))
                                             ? 'red'
                                             : 'inherit',
                                 mb: 1,
@@ -156,25 +148,6 @@ const OptionView: React.FC<OptionViewProps> = ({ options, correctAnswer, selecte
                     </Typography>
                 )}
 
-                {/* Timer Display */}
-                {!isSubmitted && (
-                    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                        Time Elapsed: {timeTaken} seconds
-                    </Typography>
-                )}
-
-                {/* Submit Button */}
-                <Box sx={{ mt: 4, textAlign: 'center' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSubmit}
-                        disabled={!selectedOption || isSubmitted}
-                        sx={{ px: 4 }}
-                    >
-                        Submit
-                    </Button>
-                </Box>
             </CardContent>
         </StyledCard>
     );
