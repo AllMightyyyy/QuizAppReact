@@ -23,7 +23,6 @@ interface ResultProps {
 }
 
 const Result: React.FC<ResultProps> = ({ questions, userAnswers, onRetry }) => {
-    // Function to check if an answer is correct
     const isAnswerCorrect = (userAnswer: string | string[], correctAnswer: string | string[]): boolean => {
         if (Array.isArray(correctAnswer)) {
             return Array.isArray(userAnswer)
@@ -47,12 +46,10 @@ const Result: React.FC<ResultProps> = ({ questions, userAnswers, onRetry }) => {
     const score = calculateScore();
     const total = questions.length;
 
-    // Generate feedback string
     const feedback = `You answered ${score} out of ${total} questions correctly. ${
         score === total ? 'Excellent work!' : 'Keep practicing to improve your score!'
     }`;
 
-    // Prepare detailed feedback data for each question
     const detailedFeedback = questions.map((question) => {
         const userAnswer = userAnswers.find((ua) => ua.questionId === question.id)?.selectedOption || '';
         const correct = isAnswerCorrect(userAnswer, question.answer);

@@ -1,5 +1,3 @@
-// src/components/OptionView/OptionView.tsx
-
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, RadioGroup, FormControlLabel, Radio, Button, Box, Checkbox } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -10,16 +8,16 @@ import { motion } from 'framer-motion';
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
     height: '100%',
-    background: '#FBFBFB',
+    background: theme.palette.background.paper,
     borderRadius: '10px',
     position: 'relative',
 }));
 
 const Heading = styled(Typography)(({ theme }) => ({
-    color: '#801BEC',
-    fontSize: '40px',
+    color: theme.palette.primary.main,
+    fontSize: '2.5rem',
     fontFamily: 'Poppins, sans-serif',
-    fontWeight: 600,
+    fontWeight: 700,
     wordWrap: 'break-word',
     marginBottom: theme.spacing(2),
 }));
@@ -30,7 +28,7 @@ interface OptionViewProps {
     selectedOption: string | string[];
     onSelect: (option: string | string[]) => void;
     handleAnswer: (selectedOption: string | string[], isCorrect: boolean, timeTaken: number) => void;
-    timeTaken: number; // New prop
+    timeTaken: number;
 }
 
 const OptionView: React.FC<OptionViewProps> = ({
@@ -49,9 +47,9 @@ const OptionView: React.FC<OptionViewProps> = ({
             const updatedSelection = selectedOption.includes(option)
                 ? selectedOption.filter((item) => item !== option)
                 : [...selectedOption, option];
-            onSelect(updatedSelection); // Update parent state
+            onSelect(updatedSelection);
         } else {
-            onSelect(option); // Update parent state
+            onSelect(option);
         }
     };
 
@@ -62,7 +60,7 @@ const OptionView: React.FC<OptionViewProps> = ({
             : selectedOption === correctAnswer;
         setIsCorrect(correct);
         setIsSubmitted(true);
-        handleAnswer(selectedOption, correct, timeTaken); // Use timeTaken from props
+        handleAnswer(selectedOption, correct, timeTaken);
     };
 
     return (
@@ -73,7 +71,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                     aria-label="quiz-options"
                     name="quiz-options"
                     value={Array.isArray(selectedOption) ? '' : selectedOption}
-                    onChange={(e) => onSelect(e.target.value)} // Update parent state
+                    onChange={(e) => onSelect(e.target.value)}
                     sx={{ opacity: isSubmitted ? 0.5 : 1 }}
                 >
                     {options.map((option, index) => (
@@ -90,7 +88,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                                 ) : (
                                     <Radio
                                         checked={selectedOption === option}
-                                        onChange={() => onSelect(option)} // Update parent state
+                                        onChange={() => onSelect(option)}
                                         color="secondary"
                                     />
                                 )
@@ -117,7 +115,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                                     )}
                                 </Box>
                             }
-                            disabled={isSubmitted} // Disable after submission
+                            disabled={isSubmitted}
                             sx={{
                                 color:
                                     isSubmitted && (Array.isArray(correctAnswer) ? correctAnswer.includes(option) : option === correctAnswer)
@@ -135,7 +133,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                 {isSubmitted && (
                     <Typography
                         variant="body1"
-                        color={isCorrect ? 'green' : 'red'}
+                        color={isCorrect ? 'success.main' : 'error.main'}
                         sx={{ mt: 2, fontWeight: 'bold' }}
                     >
                         {isCorrect
@@ -147,7 +145,6 @@ const OptionView: React.FC<OptionViewProps> = ({
                             }.`}
                     </Typography>
                 )}
-
             </CardContent>
         </StyledCard>
     );

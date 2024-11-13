@@ -1,5 +1,3 @@
-// src/App.tsx
-
 import React, { useEffect, useState } from 'react';
 import { Container, CircularProgress, Typography, Box, Grid } from '@mui/material';
 import Quiz from './components/Quiz';
@@ -9,14 +7,13 @@ import QuestionListView from './components/QuestionListView/QuestionListView';
 import { Question, UserAnswer } from './types';
 import { useQuery } from '@tanstack/react-query';
 import { fetchQuizQuestions } from './services/quizService';
-import ParticleBackground from "./components/Background/ParticleBackground";
+import VantaBackground from "./components/Background/VantaBackground";
 
 const App: React.FC = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
     const [showResult, setShowResult] = useState<boolean>(false);
     const [quizPath, setQuizPath] = useState<string | null>(null);
-    const [threeDText, setThreeDText] = useState<string>(''); // State for 3D Text
 
     const {
         data: questions,
@@ -93,17 +90,13 @@ const App: React.FC = () => {
         refetch();
     };
 
-    const handleSetThreeDText = (text: string) => {
-        setThreeDText(text); // Update 3D Text state
-    };
-
     return (
         <Box>
             {/* Navbar */}
-            <Navbar onSelectQuiz={(path) => setQuizPath(path)} onSetThreeDText={handleSetThreeDText} />
+            <Navbar onSelectQuiz={(path) => setQuizPath(path)} />
 
-            {/* 3D Particle Background with 3D Text */}
-            <ParticleBackground threeDText={threeDText} />
+            {/* Vanta Background */}
+            <VantaBackground />
 
             {/* Main Content */}
             <Container maxWidth="lg" sx={{ mt: 5, position: 'relative', zIndex: 1 }}>
@@ -168,7 +161,6 @@ const App: React.FC = () => {
             </Container>
         </Box>
     );
-
 };
 
 export default App;

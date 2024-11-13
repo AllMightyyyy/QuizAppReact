@@ -9,16 +9,16 @@ import { motion } from 'framer-motion';
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
     height: '100%',
-    background: '#FBFBFB',
+    background: theme.palette.background.paper,
     borderRadius: '10px',
     position: 'relative',
 }));
 
 const Heading = styled(Typography)(({ theme }) => ({
-    color: '#801BEC',
-    fontSize: '40px',
+    color: theme.palette.primary.main,
+    fontSize: '2.5rem',
     fontFamily: 'Poppins, sans-serif',
-    fontWeight: 600,
+    fontWeight: 700,
     wordWrap: 'break-word',
     marginBottom: theme.spacing(2),
 }));
@@ -26,7 +26,7 @@ const Heading = styled(Typography)(({ theme }) => ({
 interface FeedbackViewProps {
     feedback: string;
     onRetry: () => void;
-    questions: { id: number; text: string; correct: boolean; userAnswer: string; correctAnswer: string }[]; // Array of questions with answer status
+    questions: { id: number; text: string; correct: boolean; userAnswer: string; correctAnswer: string }[];
 }
 
 const FeedbackView: React.FC<FeedbackViewProps> = ({ feedback, onRetry, questions }) => {
@@ -47,9 +47,9 @@ const FeedbackView: React.FC<FeedbackViewProps> = ({ feedback, onRetry, question
 
                 {/* List of Questions with Answer Status */}
                 <List sx={{
-                    background: '#FBFBFB',
+                    background: theme => theme.palette.background.paper,
                     borderRadius: '10px',
-                    border: '1px #801BEC solid',
+                    border: `1px solid ${(theme: { palette: { primary: { main: any; }; }; }) => theme.palette.primary.main}`,
                     padding: 2,
                     maxHeight: '285px',
                     overflowY: 'auto',
@@ -85,7 +85,7 @@ const FeedbackView: React.FC<FeedbackViewProps> = ({ feedback, onRetry, question
                     >
                         <Button
                             variant="contained"
-                            color="primary"
+                            color="secondary"
                             onClick={onRetry}
                             startIcon={<ReplayIcon />}
                             sx={{ px: 4 }}

@@ -3,7 +3,7 @@ import { CircularProgress, Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
 interface CircularProgressIndicatorProps {
-    progress: number; // Progress percentage
+    progress: number;
     label: string;
 }
 

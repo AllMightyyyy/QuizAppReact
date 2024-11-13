@@ -1,5 +1,3 @@
-// src/components/QuestionCard.tsx
-
 import React, { useState, useEffect } from 'react';
 import {
     Button,
@@ -58,7 +56,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) =
                 name={`question-${question.id}`}
                 value={selectedOption}
                 onChange={(e) => setSelectedOption(e.target.value)}
-                sx={{ opacity: isSubmitted ? 0.6 : 1 }} // Dim options after submission
+                sx={{ opacity: isSubmitted ? 0.6 : 1 }}
             >
                 {question.options.map((option, index) => (
                     <motion.div
@@ -71,7 +69,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) =
                             value={option}
                             control={<Radio color="secondary" />}
                             label={option}
-                            disabled={isSubmitted} // Disable options after submission
+                            disabled={isSubmitted}
                             sx={{
                                 color:
                                     isSubmitted && option === question.answer
@@ -83,9 +81,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) =
                                     isSubmitted && option === question.answer ? 'bold' : 'normal',
                                 backgroundColor:
                                     isSubmitted && option === question.answer
-                                        ? 'rgba(0, 255, 0, 0.1)' // Light green for correct answer
+                                        ? 'rgba(0, 255, 0, 0.1)'
                                         : isSubmitted && option === selectedOption && option !== question.answer
-                                            ? 'rgba(255, 0, 0, 0.1)' // Light red for incorrect answer
+                                            ? 'rgba(255, 0, 0, 0.1)'
                                             : 'transparent',
                                 borderRadius: '5px',
                                 p: 1,

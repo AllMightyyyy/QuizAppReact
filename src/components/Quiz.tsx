@@ -1,5 +1,3 @@
-// src/components/Quiz.tsx
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, LinearProgress, Box, Stack, Button } from '@mui/material';
 import OptionView from './OptionView/OptionView';
@@ -28,17 +26,14 @@ const Quiz: React.FC<QuizProps> = ({
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
     useEffect(() => {
-        // Reset state for each new question and start timer
         setIsSubmitted(false);
         setIsCorrect(null);
         setSelectedOption('');
         setTimeTaken(0);
 
-        // Start the timer for each question
         const intervalId = setInterval(() => setTimeTaken((prev) => prev + 1), 1000);
         setTimer(intervalId);
 
-        // Clean up timer when question changes or component unmounts
         return () => {
             if (intervalId) clearInterval(intervalId);
         };
@@ -46,7 +41,6 @@ const Quiz: React.FC<QuizProps> = ({
 
     const onSubmit = () => {
         if (selectedOption) {
-            // Check if the selected answer is correct, supporting both string and string[] answers
             const isAnswerCorrect = Array.isArray(question.answer)
                 ? Array.isArray(selectedOption)
                     ? selectedOption.sort().join() === question.answer.sort().join()
@@ -55,17 +49,13 @@ const Quiz: React.FC<QuizProps> = ({
             setIsCorrect(isAnswerCorrect);
             setIsSubmitted(true);
 
-            // Stop the timer
             if (timer) clearInterval(timer);
-
-            // Pass the answer data back to the parent component
             handleAnswer(selectedOption, isAnswerCorrect, timeTaken);
         }
     };
 
     return (
         <Box>
-            {/* Quiz Header */}
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
                 <Typography variant="subtitle1">
                     Question {currentQuestionIndex + 1} of {totalQuestions}
@@ -73,14 +63,12 @@ const Quiz: React.FC<QuizProps> = ({
                 <Typography variant="subtitle1">Subject: {question.subject}</Typography>
             </Stack>
 
-            {/* Progress Bar */}
             <LinearProgress
                 variant="determinate"
                 value={progress}
                 sx={{ height: 10, borderRadius: 5, mb: 3 }}
             />
 
-            {/* Animated Question Card */}
             <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -96,18 +84,17 @@ const Quiz: React.FC<QuizProps> = ({
                             correctAnswer={question.answer}
                             selectedOption={selectedOption}
                             onSelect={setSelectedOption}
-                            handleAnswer={(selectedOption, isCorrect, timeTaken) => { // Ensure correct types
+                            handleAnswer={(selectedOption, isCorrect, timeTaken) => {
                                 setIsCorrect(isCorrect);
                                 setIsSubmitted(true);
                                 handleAnswer(selectedOption, isCorrect, timeTaken);
                             }}
-                            timeTaken={timeTaken} // Pass the timeTaken prop
+                            timeTaken={timeTaken}
                         />
                     </CardContent>
                 </Card>
             </motion.div>
 
-            {/* Feedback Message */}
             {isSubmitted && (
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
@@ -116,7 +103,7 @@ const Quiz: React.FC<QuizProps> = ({
                 >
                     <Typography
                         variant="body1"
-                        color={isCorrect ? 'green' : 'red'}
+                        color={isCorrect ? 'success.main' : 'error.main'}
                         sx={{ mt: 2, fontWeight: 'bold' }}
                     >
                         {isCorrect ? 'Correct!' : `Incorrect. The correct answer is "${Array.isArray(question.answer) ? question.answer.join(', ') : question.answer}".`}
@@ -124,19 +111,24 @@ const Quiz: React.FC<QuizProps> = ({
                 </motion.div>
             )}
 
-            {/* Timer Display */}
             <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                 Time Taken: {timeTaken} seconds
             </Typography>
 
-            {/* Submit Button */}
             <Box sx={{ textAlign: 'right', mt: 2 }}>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={onSubmit}
                     disabled={!selectedOption || isSubmitted}
-                    sx={{ px: 4 }}
+                    sx={{
+                        px: 4,
+                        backgroundColor: !selectedOption || isSubmitted ? 'grey.400' : 'primary.main',
+                        color: !selectedOption || isSubmitted ? 'grey.700' : 'primary.contrastText',
+                        '&:hover': {
+                            backgroundColor: !selectedOption || isSubmitted ? 'grey.400' : 'primary.dark',
+                        },
+                    }}
                 >
                     Submit
                 </Button>

@@ -1,23 +1,21 @@
-// src/components/QuestionView/QuestionView.tsx
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled, Theme } from '@mui/system';
 import { motion } from 'framer-motion';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
     height: '100%',
-    background: '#FBFBFB',
+    background: theme.palette.background.paper,
     borderRadius: '10px',
     position: 'relative',
 }));
 
 const Heading = styled(Typography)(({ theme }) => ({
-    color: '#801BEC',
-    fontSize: '40px',
+    color: theme.palette.primary.main,
+    fontSize: '2.5rem',
     fontFamily: 'Poppins, sans-serif',
-    fontWeight: 600,
+    fontWeight: 700,
     wordWrap: 'break-word',
     marginBottom: theme.spacing(2),
 }));
@@ -51,14 +49,12 @@ const QuestionView: React.FC<QuestionViewProps> = ({
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        // Start timer on component mount
         setTimer(setInterval(() => setTimeTaken((prev) => prev + 1), 1000));
         return () => {
-            if (timer) clearInterval(timer); // Clear timer on component unmount
+            if (timer) clearInterval(timer);
         };
-    }, [questionNumber]); // Reset timer when question changes
+    }, [questionNumber]);
 
-    // Stop the timer and submit when user submits
     const handleSubmit = () => {
         if (timer) clearInterval(timer);
         onSubmit();
@@ -69,9 +65,8 @@ const QuestionView: React.FC<QuestionViewProps> = ({
             <CardContent>
                 <Heading>Question {questionNumber} of {totalQuestions}</Heading>
 
-                {/* Subject and Feedback */}
                 {subject && (
-                    <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 1 }}>
+                    <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
                         Subject: {subject}
                     </Typography>
                 )}
@@ -84,7 +79,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
                     >
                         <Typography
                             variant="body1"
-                            color={isCorrect ? 'green' : 'red'}
+                            color={isCorrect ? 'success.main' : 'error.main'}
                             sx={{ fontWeight: 'bold', mb: 2 }}
                         >
                             {isCorrect ? 'Correct!' : 'Incorrect'}
@@ -95,9 +90,9 @@ const QuestionView: React.FC<QuestionViewProps> = ({
                 {/* Question Box */}
                 <Box
                     sx={{
-                        background: '#FBFBFB',
+                        background: (theme: Theme) => theme.palette.background.paper,
                         borderRadius: '10px',
-                        border: '1px #801BEC solid',
+                        border: (theme: Theme) => `1px solid ${theme.palette.primary.main}`,
                         padding: 2,
                         minHeight: '231px',
                         mb: 4,
@@ -113,11 +108,11 @@ const QuestionView: React.FC<QuestionViewProps> = ({
 
                 {/* Navigation Buttons */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="contained" color="primary" onClick={onPrevious} disabled={questionNumber === 1}>
+                    <Button variant="contained" color="secondary" onClick={onPrevious} disabled={questionNumber === 1}>
                         Previous
                     </Button>
                     {isLastQuestion ? (
-                        <Button variant="contained" color="secondary" onClick={handleSubmit}>
+                        <Button variant="contained" color="primary" onClick={handleSubmit}>
                             Submit
                         </Button>
                     ) : (

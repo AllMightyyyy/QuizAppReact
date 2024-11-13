@@ -1,5 +1,3 @@
-// src/components/QuestionListView/QuestionListView.tsx
-
 import React from 'react';
 import {
     Card,
@@ -22,14 +20,14 @@ import { motion } from 'framer-motion';
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
     height: '100%',
-    background: '#FBFBFB',
+    background: theme.palette.background.paper,
     borderRadius: '10px',
     position: 'relative',
 }));
 
 const Heading = styled(Typography)(({ theme }) => ({
-    color: '#801BEC',
-    fontSize: '40px',
+    color: theme.palette.primary.main,
+    fontSize: '2.5rem',
     fontFamily: 'Poppins, sans-serif',
     fontWeight: 600,
     wordWrap: 'break-word',
@@ -64,11 +62,13 @@ const QuestionListView: React.FC<QuestionListViewProps> = ({
                                 <ListItemButton
                                     selected={question.id === currentQuestionId}
                                     onClick={() => onSelect(question.id)}
-                                    disabled={question.answered && question.correct !== null} // Lock if answered
+                                    disabled={question.answered && question.correct !== null}
                                     sx={{
                                         backgroundColor:
-                                            question.id === currentQuestionId ? '#e1d7f7' : 'transparent',
-                                        '&:hover': { backgroundColor: '#f3e8ff' },
+                                            question.id === currentQuestionId
+                                                ? theme => theme.palette.primary.light
+                                                : 'transparent',
+                                        '&:hover': { backgroundColor: theme => theme.palette.action.hover },
                                         mb: 1,
                                         borderRadius: '8px',
                                     }}
@@ -81,20 +81,18 @@ const QuestionListView: React.FC<QuestionListViewProps> = ({
                                                 <CancelIcon color="error" />
                                             )
                                         ) : (
-                                            <CircleIcon sx={{ color: '#801BEC' }} />
+                                            <CircleIcon sx={{ color: theme => theme.palette.primary.main }} />
                                         )}
                                     </ListItemIcon>
                                     <ListItemText
                                         primary={`Question ${question.id}`}
                                         sx={{
-                                            color:
-                                                question.answered && question.correct === true
-                                                    ? 'green'
-                                                    : question.answered && question.correct === false
-                                                        ? 'red'
-                                                        : 'inherit',
-                                            fontWeight:
-                                                question.id === currentQuestionId ? 'bold' : 'normal',
+                                            color: question.answered
+                                                ? question.correct
+                                                    ? 'success.main'
+                                                    : 'error.main'
+                                                : 'text.primary',
+                                            fontWeight: question.id === currentQuestionId ? 'bold' : 'normal',
                                         }}
                                     />
                                 </ListItemButton>

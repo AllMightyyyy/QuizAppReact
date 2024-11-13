@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Question } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || ''; // Set in .env file
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || ''; // This is for future java spring boot backend API
 
 export const fetchQuizQuestions = async (quizPath: string): Promise<Question[]> => {
     try {
