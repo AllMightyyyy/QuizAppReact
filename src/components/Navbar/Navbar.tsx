@@ -1,4 +1,3 @@
-// src/components/Navbar/Navbar.tsx
 import React, { useEffect, useState, useContext } from 'react';
 import { AppBar, Toolbar, Typography, Box, Button, Dialog, DialogContent, Grid, Card, CardContent, CircularProgress, Alert } from '@mui/material';
 import QuizIcon from '@mui/icons-material/Quiz';
@@ -136,9 +135,8 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                         </Typography>
                     </Box>
 
-                    {isAuthenticated && (
+                    {isAuthenticated ? (
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {/* Button to open quiz selection dialog */}
                             <Button
                                 variant="outlined"
                                 color="primary"
@@ -154,7 +152,6 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                                 Select Quiz
                             </Button>
 
-                            {/* Leaderboard Button */}
                             <Button
                                 variant="outlined"
                                 color="primary"
@@ -172,7 +169,6 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                                 Leaderboard
                             </Button>
 
-                            {/* Logout Button */}
                             <Button
                                 variant="outlined"
                                 color="secondary"
@@ -185,6 +181,39 @@ const Navbar: React.FC<NavbarProps> = ({ onSelectQuiz }) => {
                                 }}
                             >
                                 Logout
+                            </Button>
+                        </Box>
+                    ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                component={RouterLink}
+                                to="/login"
+                                sx={{
+                                    textTransform: 'none',
+                                    borderColor: '#F5686B',
+                                    color: '#F5686B',
+                                    '&:hover': { borderColor: '#F5686B' },
+                                    mr: 2,
+                                }}
+                            >
+                                Login
+                            </Button>
+
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                component={RouterLink}
+                                to="/register"
+                                sx={{
+                                    textTransform: 'none',
+                                    borderColor: '#F5686B',
+                                    color: '#F5686B',
+                                    '&:hover': { borderColor: '#F5686B' },
+                                }}
+                            >
+                                Register
                             </Button>
                         </Box>
                     )}

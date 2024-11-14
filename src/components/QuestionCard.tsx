@@ -9,46 +9,43 @@ import {
     Typography,
     Box
 } from '@mui/material';
-import { Question } from '../types';
+import { QuestionResponse } from '../types';
 import { motion } from 'framer-motion';
 
 interface QuestionCardProps {
-    question: Question;
-    handleAnswer: (selectedOption: string, isCorrect: boolean, timeTaken: number) => void;
+    question: QuestionResponse;
+    handleAnswer: (selectedOption: string, timeTaken: number) => void;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) => {
     const [selectedOption, setSelectedOption] = useState<string>('');
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [timeTaken, setTimeTaken] = useState(0);
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         // Start timer when the component mounts
-        setTimer(setInterval(() => setTimeTaken((prev) => prev + 1), 1000));
+        const newTimer = setInterval(() => setTimeTaken(prev => prev + 1), 1000);
+        setTimer(newTimer);
         return () => {
-            if (timer) clearInterval(timer); // Clear timer on unmount
+            if (newTimer) clearInterval(newTimer); // Clear timer on unmount
         };
     }, []);
 
     const onSubmit = () => {
         if (selectedOption !== '') {
-            // Check if the answer is correct
-            const isAnswerCorrect = selectedOption === question.answer;
-            setIsCorrect(isAnswerCorrect);
             setIsSubmitted(true);
 
             // Stop the timer
             if (timer) clearInterval(timer);
 
             // Send answer data to parent component
-            handleAnswer(selectedOption, isAnswerCorrect, timeTaken);
+            handleAnswer(selectedOption, timeTaken);
         }
     };
 
     return (
-        <FormControl component="fieldset">
+        <FormControl component="fieldset" sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
                 {question.question}
             </Typography>
@@ -72,20 +69,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) =
                             label={option}
                             disabled={isSubmitted}
                             sx={{
-                                color:
-                                    isSubmitted && option === question.answer
-                                        ? 'green'
-                                        : isSubmitted && option === selectedOption && option !== question.answer
-                                            ? 'red'
-                                            : 'inherit',
-                                fontWeight:
-                                    isSubmitted && option === question.answer ? 'bold' : 'normal',
-                                backgroundColor:
-                                    isSubmitted && option === question.answer
-                                        ? 'rgba(0, 255, 0, 0.1)'
-                                        : isSubmitted && option === selectedOption && option !== question.answer
-                                            ? 'rgba(255, 0, 0, 0.1)'
-                                            : 'transparent',
+                                backgroundColor: isSubmitted ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                                 borderRadius: '5px',
                                 p: 1,
                             }}
@@ -93,17 +77,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, handleAnswer }) =
                     </motion.div>
                 ))}
             </RadioGroup>
-
-            {/* Feedback Message */}
-            {isSubmitted && (
-                <Typography
-                    variant="body1"
-                    color={isCorrect ? 'green' : 'red'}
-                    sx={{ mt: 2, fontWeight: 'bold' }}
-                >
-                    {isCorrect ? 'Correct!' : `Incorrect. The correct answer is "${question.answer}".`}
-                </Typography>
-            )}
 
             {/* Timer Display */}
             <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>

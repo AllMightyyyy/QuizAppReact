@@ -1,5 +1,5 @@
 // src/components/Auth/Login.tsx
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { TextField, Button, Typography, Container, Box, Link, Paper, CircularProgress, Checkbox, FormControlLabel, InputAdornment, IconButton } from '@mui/material';
 import axiosInstance from '../../api/axiosInstance';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -11,7 +11,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login: React.FC = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const { login } = useContext(AuthContext);
+    const { login, isAuthenticated } = useContext(AuthContext);
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -27,27 +27,32 @@ const Login: React.FC = () => {
         setRememberMe(event.target.checked);
     };
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/'); // Redirect to main page if logged in
+        }
+    }, [isAuthenticated, navigate]);
+
     const formik = useFormik({
         initialValues: { username: '', password: '' },
         validationSchema: Yup.object({
             username: Yup.string().required('Username is required'),
             password: Yup.string().required('Password is required'),
         }),
-        onSubmit: async (values) => {
-            setError('');
+        onSubmit: async (values, { setErrors }) => {
             setLoading(true);
             try {
                 const response = await axiosInstance.post('/api/auth/login', values);
                 const token = response.data.token;
                 login(token, rememberMe);
-                setLoading(false);
                 enqueueSnackbar('Login successful!', { variant: 'success' });
                 navigate('/');
             } catch (err: any) {
                 setLoading(false);
-                if (err.response && err.response.status === 403 && err.response.data.error) {
-                    setError(err.response.data.error);
-                    enqueueSnackbar(err.response.data.error, { variant: 'error' });
+                if (err.response && err.response.data && err.response.data.error) {
+                    const errorMessage = err.response.data.error;
+                    setError(errorMessage);
+                    enqueueSnackbar(errorMessage, { variant: 'error' });
                 } else {
                     setError('Login failed. Please check your credentials.');
                     enqueueSnackbar('Login failed. Please check your credentials.', { variant: 'error' });
@@ -143,6 +148,11 @@ const Login: React.FC = () => {
                                 Resend Confirmation Email
                             </Link>
                         </Typography>
+                        {error && (
+                            <Typography color="error" align="center" sx={{ mb: 2 }}>
+                                {error}
+                            </Typography>
+                        )}
                     </Box>
                 </Paper>
             </Box>

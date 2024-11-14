@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode'; // Use named import for jwt-decode
 import { useNavigate } from 'react-router-dom';
 
 interface User {
+    id: number; // Add this line
     username: string;
     email: string;
     roles: string[];
@@ -46,11 +47,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const logout = async () => {
+        /*
         try {
             await axiosInstance.post('/api/auth/logout'); // Assuming a logout endpoint
         } catch (err) {
             console.error('Logout error:', err);
         }
+
+         */
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         setUser(null);
@@ -62,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (token) {
             try {
-                const decoded = jwtDecode<User>(token); // Explicitly type the jwtDecode result
+                const decoded: any = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (decoded.exp < currentTime) {
                     logout();

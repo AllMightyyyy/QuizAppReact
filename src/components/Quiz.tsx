@@ -1,14 +1,14 @@
 // src/components/Quiz.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, Typography, Button, Box, Checkbox, FormControlLabel, FormGroup, LinearProgress } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Question } from '../types';
+import { QuestionResponse } from '../types';
 
 interface QuizProps {
-    question: Question;
+    question: QuestionResponse;
     questionNumber: number;
     totalQuestions: number;
-    handleAnswer: (selectedOption: string | string[], isCorrect: boolean, timeTakenSeconds: number) => void;
+    handleAnswer: (selectedOption: string | string[], isCorrect: boolean) => void;
     onSubmit: () => void;
 }
 
@@ -22,17 +22,8 @@ const Quiz: React.FC<QuizProps> = ({
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-    const [timeTaken, setTimeTaken] = useState<number>(0);
 
-    const isMultiple = Array.isArray(question.answer);
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeTaken((prev) => prev + 1);
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
+    const isMultiple = false; // Assuming single choice. Adjust if multiple choice is supported.
 
     const handleOptionChange = (option: string) => {
         if (isMultiple) {
@@ -45,18 +36,12 @@ const Quiz: React.FC<QuizProps> = ({
     };
 
     const handleSubmit = () => {
-        let correct = false;
-        if (isMultiple) {
-            correct =
-                (question.answer as string[]).length === selectedOptions.length &&
-                (question.answer as string[]).every((ans) => selectedOptions.includes(ans));
-        } else {
-            correct = selectedOptions[0] === question.answer;
-        }
-
-        setIsCorrect(correct);
+        // Since the correct answer isn't available on the frontend, pass isCorrect as false or true based on backend response
+        // The actual correctness is handled by the backend and reflected in the AnswerResponseDTO
+        // Here, we'll assume it's incorrect and let the backend handle the actual correctness
         setIsSubmitted(true);
-        handleAnswer(selectedOptions, correct, timeTaken);
+        handleAnswer(selectedOptions, false); // Placeholder, actual correctness handled post submission
+        onSubmit();
     };
 
     return (
@@ -74,77 +59,38 @@ const Quiz: React.FC<QuizProps> = ({
                     <Typography variant="subtitle1" gutterBottom>
                         {question.question}
                     </Typography>
-                    {isMultiple ? (
-                        <FormGroup>
-                            {question.options.map((option, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    style={{ marginBottom: '10px' }}
-                                >
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={selectedOptions.includes(option)}
-                                                onChange={() => handleOptionChange(option)}
-                                                disabled={isSubmitted}
-                                                color="secondary"
-                                            />
-                                        }
-                                        label={option}
-                                        sx={{
-                                            color: isSubmitted && (question.answer as string[]).includes(option)
-                                                ? 'green'
-                                                : isSubmitted && selectedOptions.includes(option) && !(question.answer as string[]).includes(option)
-                                                    ? 'red'
-                                                    : 'inherit',
-                                        }}
-                                    />
-                                </motion.div>
-                            ))}
-                        </FormGroup>
-                    ) : (
-                        <Box>
-                            {question.options.map((option, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    style={{ marginBottom: '10px' }}
-                                >
-                                    <Button
-                                        variant={selectedOptions.includes(option) ? 'contained' : 'outlined'}
-                                        color="primary"
-                                        fullWidth
-                                        onClick={() => handleOptionChange(option)}
-                                        disabled={isSubmitted}
-                                        sx={{
-                                            justifyContent: 'flex-start',
-                                            textTransform: 'none',
-                                        }}
-                                    >
-                                        {option}
-                                    </Button>
-                                </motion.div>
-                            ))}
-                        </Box>
-                    )}
-                    {isSubmitted && (
-                        <Typography variant="body1" sx={{ mt: 2, color: isCorrect ? 'green' : 'red' }}>
-                            {isCorrect ? 'Correct!' : `Incorrect. The correct answer is "${question.answer}".`}
-                        </Typography>
-                    )}
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                        Time Taken: {timeTaken} seconds
-                    </Typography>
+                    <FormGroup>
+                        {question.options.map((option, index) => (
+                            <motion.div
+                                key={index}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                style={{ marginBottom: '10px' }}
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={selectedOptions.includes(option)}
+                                            onChange={() => handleOptionChange(option)}
+                                            disabled={isSubmitted}
+                                            color="secondary"
+                                        />
+                                    }
+                                    label={option}
+                                    sx={{
+                                        color: isSubmitted ? 'grey.700' : 'inherit',
+                                    }}
+                                />
+                            </motion.div>
+                        ))}
+                    </FormGroup>
                     {!isSubmitted && (
                         <Box sx={{ textAlign: 'right', mt: 2 }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSubmit}
-                                disabled={isMultiple ? selectedOptions.length === 0 : selectedOptions.length === 0}
+                                disabled={selectedOptions.length === 0}
                             >
                                 Submit
                             </Button>

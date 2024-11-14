@@ -22,6 +22,17 @@ interface SubmitAttemptResponse {
     pointsEarned: number;
 }
 
+interface AnswerSubmissionDTO {
+    userId: number;
+    quizId: number;
+    answers: { [questionId: number]: string | string[] };
+}
+
+interface AnswerResponseDTO {
+    correctness: { [questionId: number]: boolean };
+    correctAnswers: { [questionId: number]: number | number[] };
+}
+
 export const startAttempt = async (quizId: number): Promise<StartAttemptResponse> => {
     try {
         const response = await axiosInstance.post<StartAttemptResponse>('/api/attempts/start', { quizId });
@@ -38,6 +49,17 @@ export const submitAttempt = async (payload: SubmitAttemptPayload): Promise<Subm
         return response.data;
     } catch (error) {
         console.error('Error submitting attempt:', error);
+        throw error;
+    }
+};
+
+// New Function: Submit Answers
+export const submitAnswers = async (payload: AnswerSubmissionDTO): Promise<AnswerResponseDTO> => {
+    try {
+        const response = await axiosInstance.post<AnswerResponseDTO>('/api/quizzes/submit-answers', payload);
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting answers:', error);
         throw error;
     }
 };

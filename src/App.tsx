@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Container, Box, CssBaseline, ThemeProvider } from '@mui/material';
@@ -13,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute';
 import VantaBackground from "./components/Background/VantaBackground";
 import ErrorBoundary from './components/ErrorBoundary';
 import theme from './theme';
+import CheckEmail from "./components/Auth/CheckEmail";
 
 const App: React.FC = () => {
     const [currentQuizId, setCurrentQuizId] = useState<number | null>(null);
@@ -21,6 +21,11 @@ const App: React.FC = () => {
     const handleSelectQuiz = (quizId: number, attemptId: number) => {
         setCurrentQuizId(quizId);
         setAttemptId(attemptId);
+    };
+
+    const handleRetry = () => {
+        setCurrentQuizId(null);
+        setAttemptId(null);
     };
 
     return (
@@ -32,19 +37,33 @@ const App: React.FC = () => {
                     <VantaBackground />
                     <Container maxWidth="lg" sx={{ mt: 5, position: 'relative', zIndex: 1 }}>
                         <Routes>
-                            <Route path="/" element={
-                                <PrivateRoute>
-                                    <QuizContent />
-                                </PrivateRoute>
-                            } />
+                            <Route
+                                path="/"
+                                element={
+                                    <PrivateRoute>
+                                        <QuizContent
+                                            currentQuizId={currentQuizId}
+                                            attemptId={attemptId}
+                                            onRetry={handleRetry}
+                                        />
+                                    </PrivateRoute>
+                                }
+                            />
                             <Route path="/register" element={<Register />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/check-email" element={<CheckEmail />} />
                             <Route path="/confirm-email" element={<EmailConfirmation />} />
                             <Route path="/resend-confirmation" element={<ResendConfirmation />} />
                             <Route path="/leaderboard" element={
                                 <PrivateRoute>
-                                    <QuizContent currentQuizId={currentQuizId} attemptId={attemptId} />
-                                    <Leaderboard />
+                                    <React.Fragment>
+                                        <QuizContent
+                                            currentQuizId={currentQuizId}
+                                            attemptId={attemptId}
+                                            onRetry={handleRetry}
+                                        />
+                                        <Leaderboard />
+                                    </React.Fragment>
                                 </PrivateRoute>
                             } />
                             <Route path="*" element={<Navigate to="/" replace />} />

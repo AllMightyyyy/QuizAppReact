@@ -15,16 +15,20 @@ const ResendConfirmation: React.FC = () => {
         setLoading(true);
         try {
             const response = await axiosInstance.post('/api/auth/resend-confirmation', { email });
-            enqueueSnackbar(response.data.message || 'Confirmation email sent successfully.', { variant: 'success' });
+            enqueueSnackbar(response.data || 'Confirmation email sent successfully.', { variant: 'success' });
             setLoading(false);
         } catch (err: any) {
             setLoading(false);
-            if (err.response && err.response.status === 429) {
-                enqueueSnackbar('Too many requests. Please try again later.', { variant: 'error' });
-            } else if (err.response && err.response.data && err.response.data.error) {
-                enqueueSnackbar(err.response.data.error, { variant: 'error' });
+            if (err.response) {
+                if (err.response.status === 429) {
+                    enqueueSnackbar('Too many requests. Please try again later.', { variant: 'error' });
+                } else if (err.response.status === 400) {
+                    enqueueSnackbar(err.response.data || 'Invalid email or already confirmed.', { variant: 'error' });
+                } else {
+                    enqueueSnackbar('Error sending confirmation email. Please check your email address.', { variant: 'error' });
+                }
             } else {
-                enqueueSnackbar('Error sending confirmation email. Please check your email address.', { variant: 'error' });
+                enqueueSnackbar('Network error. Please try again.', { variant: 'error' });
             }
         }
     };

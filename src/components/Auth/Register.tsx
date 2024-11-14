@@ -1,16 +1,24 @@
 // src/components/Auth/Register.tsx
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { TextField, Button, Typography, Container, Box, Link, Paper, CircularProgress, InputAdornment } from '@mui/material';
 import axiosInstance from '../../api/axiosInstance';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
+import {AuthContext} from "../../context/AuthContext";
 
 const Register: React.FC = () => {
+    const { isAuthenticated } = useContext(AuthContext);
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/'); // Redirect to main page if logged in
+        }
+    }, [isAuthenticated, navigate]);
 
     const formik = useFormik({
         initialValues: { username: '', email: '', password: '' },
@@ -31,8 +39,7 @@ const Register: React.FC = () => {
                 await axiosInstance.post('/api/auth/register', values);
                 enqueueSnackbar('Registration successful! Please check your email to confirm.', { variant: 'success' });
                 setLoading(false);
-                // Automatically navigate after a delay
-                setTimeout(() => navigate('/confirm-email'), 3000);
+                navigate('/check-email');
             } catch (err: any) {
                 setLoading(false);
                 if (err.response && err.response.data && err.response.data.errors) {
