@@ -1,3 +1,4 @@
+/* src/components/QuestionView/QuestionView.tsx */
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { styled, Theme } from '@mui/system';

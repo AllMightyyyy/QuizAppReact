@@ -1,6 +1,6 @@
+// src/components/CircularProgressIndicator.tsx
 import React from 'react';
 import { CircularProgress, Box, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
 
 interface CircularProgressIndicatorProps {
     progress: number;

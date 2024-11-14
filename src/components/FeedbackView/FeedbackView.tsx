@@ -1,3 +1,4 @@
+/* src/components/FeedbackView/FeedbackView.tsx */
 import React from 'react';
 import { Card, CardContent, Typography, Button, Box, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -5,6 +6,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { styled } from '@mui/system';
 import { motion } from 'framer-motion';
+import { DetailedFeedback } from '../../types';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
@@ -26,7 +28,7 @@ const Heading = styled(Typography)(({ theme }) => ({
 interface FeedbackViewProps {
     feedback: string;
     onRetry: () => void;
-    questions: { id: number; text: string; correct: boolean; userAnswer: string; correctAnswer: string }[];
+    questions: DetailedFeedback[];
 }
 
 const FeedbackView: React.FC<FeedbackViewProps> = ({ feedback, onRetry, questions }) => {

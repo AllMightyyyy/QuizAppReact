@@ -1,165 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { Container, CircularProgress, Typography, Box, Grid } from '@mui/material';
-import Quiz from './components/Quiz';
-import Result from './components/Result';
+// src/App.tsx
+import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Container, Box, CssBaseline, ThemeProvider } from '@mui/material';
+import Register from './components/Auth/Register';
+import Login from './components/Auth/Login';
+import EmailConfirmation from './components/Auth/EmailConfirmation';
+import ResendConfirmation from './components/Auth/ResendConfirmation';
 import Navbar from './components/Navbar/Navbar';
-import QuestionListView from './components/QuestionListView/QuestionListView';
-import { Question, UserAnswer } from './types';
-import { useQuery } from '@tanstack/react-query';
-import { fetchQuizQuestions } from './services/quizService';
+import QuizContent from './components/QuizContent';
+import Leaderboard from './components/Leaderboard';
+import PrivateRoute from './components/PrivateRoute';
 import VantaBackground from "./components/Background/VantaBackground";
+import ErrorBoundary from './components/ErrorBoundary';
+import theme from './theme';
 
 const App: React.FC = () => {
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-    const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-    const [showResult, setShowResult] = useState<boolean>(false);
-    const [quizPath, setQuizPath] = useState<string | null>(null);
+    const [currentQuizId, setCurrentQuizId] = useState<number | null>(null);
+    const [attemptId, setAttemptId] = useState<number | null>(null);
 
-    const {
-        data: questions,
-        isLoading,
-        isError,
-        error,
-        refetch,
-    } = useQuery<Question[], Error>({
-        queryKey: ['quizQuestions', quizPath],
-        queryFn: () => fetchQuizQuestions(quizPath as string),
-        enabled: !!quizPath, // Only fetch when quizPath is set
-    });
-
-    useEffect(() => {
-        if (questions) {
-            setShowResult(false);
-            setUserAnswers([]);
-            setCurrentQuestionIndex(0);
-        }
-    }, [questions]);
-
-    useEffect(() => {
-        if (isError && error) {
-            console.error('Error fetching quiz questions:', error.message);
-        }
-    }, [isError, error]);
-
-    const handleAnswer = (
-        selectedOption: string | string[],
-        isCorrect: boolean,
-        timeTaken: number
-    ) => {
-        if (!questions) return;
-        const currentQuestion = questions[currentQuestionIndex];
-        const answer: UserAnswer = {
-            questionId: currentQuestion.id,
-            selectedOption,
-            isCorrect,
-            timeTaken,
-        };
-
-        setUserAnswers((prevAnswers) => {
-            const existingAnswerIndex = prevAnswers.findIndex(
-                (a) => a.questionId === currentQuestion.id
-            );
-            if (existingAnswerIndex !== -1) {
-                const updatedAnswers = [...prevAnswers];
-                updatedAnswers[existingAnswerIndex] = answer;
-                return updatedAnswers;
-            } else {
-                return [...prevAnswers, answer];
-            }
-        });
-
-        if (currentQuestionIndex + 1 < questions.length) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        } else {
-            setShowResult(true);
-        }
-    };
-
-    const handleSelectQuestion = (id: number) => {
-        if (!questions) return;
-        const index = questions.findIndex((q) => q.id === id);
-        if (index !== -1) {
-            setCurrentQuestionIndex(index);
-        }
-    };
-
-    const handleRetry = () => {
-        setUserAnswers([]);
-        setCurrentQuestionIndex(0);
-        setShowResult(false);
-        refetch();
+    const handleSelectQuiz = (quizId: number, attemptId: number) => {
+        setCurrentQuizId(quizId);
+        setAttemptId(attemptId);
     };
 
     return (
-        <Box>
-            {/* Navbar */}
-            <Navbar onSelectQuiz={(path) => setQuizPath(path)} />
-
-            {/* Vanta Background */}
-            <VantaBackground />
-
-            {/* Main Content */}
-            <Container maxWidth="lg" sx={{ mt: 5, position: 'relative', zIndex: 1 }}>
-                {isLoading && quizPath ? (
-                    <Box sx={{ textAlign: 'center', mt: 10 }}>
-                        <CircularProgress />
-                        <Typography variant="h6" sx={{ mt: 2 }}>
-                            Loading Quiz...
-                        </Typography>
-                    </Box>
-                ) : isError ? (
-                    <Box sx={{ textAlign: 'center', mt: 10 }}>
-                        <Typography variant="h6" color="error">
-                            Failed to load quiz. Please try again later.
-                        </Typography>
-                    </Box>
-                ) : quizPath && questions && questions.length > 0 ? (
-                    <Grid container spacing={4}>
-                        <Grid item xs={12} md={4}>
-                            <QuestionListView
-                                questions={questions.map((q) => ({
-                                    id: q.id,
-                                    text: q.question,
-                                    answered: userAnswers.some(
-                                        (a) => a.questionId === q.id
-                                    ),
-                                    correct:
-                                        userAnswers.find(
-                                            (a) => a.questionId === q.id
-                                        )?.isCorrect ?? null,
-                                }))}
-                                currentQuestionId={
-                                    questions[currentQuestionIndex].id
-                                }
-                                onSelect={handleSelectQuestion}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                            {!showResult ? (
-                                <Quiz
-                                    question={questions[currentQuestionIndex]}
-                                    totalQuestions={questions.length}
-                                    currentQuestionIndex={currentQuestionIndex}
-                                    handleAnswer={handleAnswer}
-                                />
-                            ) : (
-                                <Result
-                                    questions={questions}
-                                    userAnswers={userAnswers}
-                                    onRetry={handleRetry}
-                                />
-                            )}
-                        </Grid>
-                    </Grid>
-                ) : (
-                    <Box sx={{ textAlign: 'center', mt: 10 }}>
-                        <Typography variant="h6" sx={{ mt: 2 }}>
-                            Please select a quiz to start.
-                        </Typography>
-                    </Box>
-                )}
-            </Container>
-        </Box>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <ErrorBoundary>
+                <Box>
+                    <Navbar onSelectQuiz={handleSelectQuiz} />
+                    <VantaBackground />
+                    <Container maxWidth="lg" sx={{ mt: 5, position: 'relative', zIndex: 1 }}>
+                        <Routes>
+                            <Route path="/" element={
+                                <PrivateRoute>
+                                    <QuizContent />
+                                </PrivateRoute>
+                            } />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/confirm-email" element={<EmailConfirmation />} />
+                            <Route path="/resend-confirmation" element={<ResendConfirmation />} />
+                            <Route path="/leaderboard" element={
+                                <PrivateRoute>
+                                    <QuizContent currentQuizId={currentQuizId} attemptId={attemptId} />
+                                    <Leaderboard />
+                                </PrivateRoute>
+                            } />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </Container>
+                </Box>
+            </ErrorBoundary>
+        </ThemeProvider>
     );
 };
 

@@ -1,3 +1,4 @@
+// src/theme.ts
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -11,11 +12,11 @@ const theme = createTheme({
             contrastText: '#FFFFFF',
         },
         background: {
-            default: '#1A1A1A', // Dark background to enhance Vanta visibility
-            paper: '#2C2C2C',    // Slightly lighter than default for card backgrounds
+            default: '#1A1A1A', // Dark background for the main theme
+            paper: '#2C2C2C',    // Slightly lighter for card backgrounds
         },
         text: {
-            primary: '#FFFFFF', // White text for readability against dark backgrounds
+            primary: '#FFFFFF', // White for readability
             secondary: '#F5686B', // Accent color for secondary text
         },
     },

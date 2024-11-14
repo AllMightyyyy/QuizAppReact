@@ -1,9 +1,11 @@
+/* src/components/OptionView/OptionView.tsx */
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, RadioGroup, FormControlLabel, Radio, Button, Box, Checkbox } from '@mui/material';
+import { Card, CardContent, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Box, Button } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { styled } from '@mui/system';
 import { motion } from 'framer-motion';
+import { Question } from '../../types';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
@@ -56,12 +58,14 @@ const OptionView: React.FC<OptionViewProps> = ({
     const handleSubmit = () => {
         const correct = Array.isArray(correctAnswer)
             ? Array.isArray(selectedOption) &&
-            correctAnswer.sort().join() === selectedOption.sort().join()
+            (correctAnswer as string[]).sort().join() === (selectedOption as string[]).sort().join()
             : selectedOption === correctAnswer;
         setIsCorrect(correct);
         setIsSubmitted(true);
         handleAnswer(selectedOption, correct, timeTaken);
     };
+
+    const isMultiple = Array.isArray(correctAnswer);
 
     return (
         <StyledCard>
@@ -79,7 +83,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                             key={index}
                             value={option}
                             control={
-                                Array.isArray(correctAnswer) ? (
+                                isMultiple ? (
                                     <Checkbox
                                         checked={Array.isArray(selectedOption) && selectedOption.includes(option)}
                                         onChange={() => handleSelection(option)}
@@ -97,7 +101,7 @@ const OptionView: React.FC<OptionViewProps> = ({
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <motion.span
                                         initial={{ scale: 1 }}
-                                        animate={{ scale: isSubmitted && (Array.isArray(selectedOption) ? selectedOption.includes(option) : selectedOption === option) ? 1.1 : 1 }}
+                                        animate={{ scale: isSubmitted && ((isMultiple && (selectedOption as string[]).includes(option)) || selectedOption === option) ? 1.1 : 1 }}
                                         transition={{ duration: 0.3 }}
                                     >
                                         {option}
@@ -105,9 +109,9 @@ const OptionView: React.FC<OptionViewProps> = ({
                                     {isSubmitted && (
                                         <Box sx={{ ml: 1 }}>
                                             {Array.isArray(correctAnswer)
-                                                ? correctAnswer.includes(option) && <CheckCircleIcon color="success" />
+                                                ? (correctAnswer as string[]).includes(option) && <CheckCircleIcon color="success" />
                                                 : option === correctAnswer && <CheckCircleIcon color="success" />}
-                                            {((Array.isArray(correctAnswer) && Array.isArray(selectedOption) && selectedOption.includes(option) && !correctAnswer.includes(option)) ||
+                                            {((Array.isArray(correctAnswer) && Array.isArray(selectedOption) && (selectedOption as string[]).includes(option) && !(correctAnswer as string[]).includes(option)) ||
                                                 (!Array.isArray(correctAnswer) && selectedOption === option && option !== correctAnswer)) && (
                                                 <CancelIcon color="error" />
                                             )}
@@ -118,9 +122,9 @@ const OptionView: React.FC<OptionViewProps> = ({
                             disabled={isSubmitted}
                             sx={{
                                 color:
-                                    isSubmitted && (Array.isArray(correctAnswer) ? correctAnswer.includes(option) : option === correctAnswer)
+                                    isSubmitted && (Array.isArray(correctAnswer) ? (correctAnswer as string[]).includes(option) : option === correctAnswer)
                                         ? 'green'
-                                        : isSubmitted && ((Array.isArray(selectedOption) && selectedOption.includes(option) && !Array.isArray(correctAnswer)) || (selectedOption === option && option !== correctAnswer))
+                                        : isSubmitted && ((Array.isArray(selectedOption) && (selectedOption as string[]).includes(option) && !Array.isArray(correctAnswer)) || (selectedOption === option && option !== correctAnswer))
                                             ? 'red'
                                             : 'inherit',
                                 mb: 1,
@@ -140,10 +144,25 @@ const OptionView: React.FC<OptionViewProps> = ({
                             ? 'Correct!'
                             : `Incorrect. The correct answer is ${
                                 Array.isArray(correctAnswer)
-                                    ? correctAnswer.join(', ')
+                                    ? (correctAnswer as string[]).join(', ')
                                     : correctAnswer
                             }.`}
                     </Typography>
+                )}
+
+                {/* Submit Button */}
+                {!isSubmitted && (
+                    <Box sx={{ textAlign: 'right', mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmit}
+                            disabled={isMultiple ? (selectedOption as string[]).length === 0 : selectedOption === ''}
+                            sx={{ px: 4 }}
+                        >
+                            Submit
+                        </Button>
+                    </Box>
                 )}
             </CardContent>
         </StyledCard>

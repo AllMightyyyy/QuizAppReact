@@ -1,3 +1,4 @@
+/* src/components/QuestionListView/QuestionListView.tsx */
 import React from 'react';
 import {
     Card,
@@ -9,13 +10,18 @@ import {
     ListItemText,
     Box,
     ListItemIcon,
-    IconButton,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/system';
 import { motion } from 'framer-motion';
+
+interface QuestionListViewProps {
+    questions: { id: number; text: string; answered: boolean; correct: boolean | null }[];
+    currentQuestionId: number;
+    onSelect: (id: number) => void;
+}
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
@@ -33,12 +39,6 @@ const Heading = styled(Typography)(({ theme }) => ({
     wordWrap: 'break-word',
     marginBottom: theme.spacing(2),
 }));
-
-interface QuestionListViewProps {
-    questions: { id: number; text: string; answered: boolean; correct: boolean | null }[];
-    currentQuestionId: number;
-    onSelect: (id: number) => void;
-}
 
 const QuestionListView: React.FC<QuestionListViewProps> = ({
                                                                questions,

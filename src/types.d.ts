@@ -1,3 +1,4 @@
+// src/types.d.ts
 export interface Question {
     id: number;
     subject: string;
@@ -10,5 +11,13 @@ export interface UserAnswer {
     questionId: number;
     selectedOption: string | string[]; // Supports single or multiple selections
     isCorrect: boolean;
-    timeTaken: number;
+    timeTakenSeconds: number;
+}
+
+export interface DetailedFeedback {
+    id: number;
+    text: string;
+    correct: boolean;
+    userAnswer: string;
+    correctAnswer: string;
 }
